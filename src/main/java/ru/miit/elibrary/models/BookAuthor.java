@@ -1,0 +1,31 @@
+package ru.miit.elibrary.models;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.lang.Nullable;
+
+import java.sql.Date;
+
+@Data
+@Entity
+@Table(name="book_author")
+@AllArgsConstructor
+@NoArgsConstructor
+public class BookAuthor {
+    @Id
+    @GeneratedValue
+    @Column(name="author_id")
+    private Long author_id;
+    @Column(name="first_name")
+    private String first_name;
+    @Column(name="second_name")
+    private String second_name;
+    @Column(name="third_name")
+    @Nullable
+    private String third_name;
+    @Nullable
+    @Column(name="date_of_birth")
+    private Date date_of_birth;
+}
