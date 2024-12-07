@@ -7,10 +7,12 @@ import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
 import java.sql.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity
-@Table(name="book_author")
+@Table(name="book_author",schema = "public")
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookAuthor {
@@ -28,4 +30,6 @@ public class BookAuthor {
     @Nullable
     @Column(name="date_of_birth")
     private Date date_of_birth;
+    @ManyToMany(mappedBy = "authors")
+    private Set<Book> books = new HashSet<>();
 }

@@ -9,7 +9,7 @@ import java.sql.Date;
 
 @Data
 @Entity
-@Table(name="recovery_token")
+@Table(name="recovery_token",schema = "public")
 @AllArgsConstructor
 @NoArgsConstructor
 public class RecoveryToken {
@@ -19,7 +19,7 @@ public class RecoveryToken {
     private Long token_id;
     @Column(name="token")
     private String token;
-    @Column(name="user")
+    @PrimaryKeyJoinColumn(name="user")
     @OneToOne
     private User user;
     @Column(name="expire_dttm")

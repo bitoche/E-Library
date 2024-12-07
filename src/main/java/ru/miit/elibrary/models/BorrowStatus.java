@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Entity
-@Table(name="borrow_status")
+@Table(name="borrow_status",schema = "public")
 @AllArgsConstructor
 @NoArgsConstructor
 public class BorrowStatus {

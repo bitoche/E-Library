@@ -5,9 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Entity
-@Table(name="book_status")
+@Table(name="book_status",schema = "public")
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookStatus {
@@ -17,4 +19,6 @@ public class BookStatus {
     private Integer book_status_id;
     @Column(name="status_name")
     private String status_name;
+    @OneToMany(mappedBy = "book_id")
+    private List<Book> books;
 }

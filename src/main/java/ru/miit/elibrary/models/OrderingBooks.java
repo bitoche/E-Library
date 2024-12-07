@@ -9,7 +9,7 @@ import java.sql.Date;
 
 @Data
 @Entity
-@Table(name="ordering_books")
+@Table(name="ordering_books",schema = "public")
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderingBooks {
@@ -21,7 +21,7 @@ public class OrderingBooks {
     private Date ordering_date;
     @Column(name="expected_arrival_date")
     private Date expected_arrival_date;
-    @Column(name="administrator")
+    @JoinColumn(name="administrator")
     @ManyToOne
     private User administrator;
     @Column(name="books")

@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 @Entity
-@Table(name="bookshelf")
+@Table(name="bookshelf",schema = "public")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Bookshelf {
@@ -20,6 +20,6 @@ public class Bookshelf {
     @Column(name="shelf_number")
     private Integer shelf_number;
     @Column(name="books")
-    @OneToMany
+    @OneToMany(mappedBy = "book_id")
     private List<Book> books;
 }

@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 @Entity
-@Table(name="cabinet")
+@Table(name="cabinet",schema = "public")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Cabinet {

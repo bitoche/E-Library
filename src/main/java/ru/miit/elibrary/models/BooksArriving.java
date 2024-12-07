@@ -10,7 +10,7 @@ import java.util.List;
 
 @Data
 @Entity
-@Table(name="books_arriving")
+@Table(name="books_arriving",schema = "public")
 @AllArgsConstructor
 @NoArgsConstructor
 public class BooksArriving {
@@ -22,6 +22,7 @@ public class BooksArriving {
     private Date arriving_date;
     @Column(name="arrived_books")
     private String arrived_books;
-    @Column(name="ordering")
+    @OneToOne
+    @PrimaryKeyJoinColumn(name="ordering")
     private OrderingBooks ordering;
 }

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Entity
-@Table(name="notification")
+@Table(name="notification",schema = "public")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Notification {
@@ -19,7 +19,7 @@ public class Notification {
     private String title;
     @Column(name="text")
     private String text;
-    @Column(name="user")
+    @JoinColumn(name="user")
     @ManyToOne
     private User user;
     @Column(name="is_checked")

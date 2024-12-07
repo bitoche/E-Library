@@ -9,7 +9,7 @@ import java.sql.Date;
 
 @Data
 @Entity
-@Table(name="entry_code")
+@Table(name="entry_code",schema = "public")
 @AllArgsConstructor
 @NoArgsConstructor
 public class EntryCode {
@@ -19,7 +19,7 @@ public class EntryCode {
     private Long code_id;
     @Column(name="code")
     private String code;
-    @Column(name="user")
+    @PrimaryKeyJoinColumn(name="user")
     @OneToOne
     private User user;
     @Column(name="expire_dttm")

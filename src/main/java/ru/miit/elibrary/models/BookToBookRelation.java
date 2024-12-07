@@ -8,7 +8,7 @@ import org.hibernate.annotations.Cascade;
 
 @Data
 @Entity
-@Table(name="book_to_book_relation")
+@Table(name="book_to_book_relation",schema = "public")
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookToBookRelation {
@@ -22,7 +22,7 @@ public class BookToBookRelation {
     private Long main_book;
     @Column(name="related_book")
     private Long related_book;
-    @Column(name="relation")
     @ManyToOne
+    @JoinColumn(name="relation")
     private BookRelation relation;
 }
