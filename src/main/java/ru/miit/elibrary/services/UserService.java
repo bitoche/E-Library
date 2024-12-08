@@ -16,7 +16,6 @@ import java.util.*;
 
 @Service
 @AllArgsConstructor
-@Transactional
 public class UserService{
     @Autowired
     private IUserRepository userRepository;
@@ -65,6 +64,13 @@ public class UserService{
         PasswordEncoder pe = new BCryptPasswordEncoder();
         obj.setPassword(pe.encode(obj.getPassword()));
         userRepository.save(obj);
+        return true;
+    }
+    public boolean addRoleUpdate(User user){
+        if (userRepository.findAppUserByEmail(user.getEmail()).isEmpty()){ // пользователь не существует?
+            return false;
+        }
+        userRepository.save(user);
         return true;
     }
     private User castStringArrRolesToType(User obj){

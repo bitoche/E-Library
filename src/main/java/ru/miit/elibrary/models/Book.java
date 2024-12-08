@@ -43,4 +43,10 @@ public class Book {
             joinColumns = {@JoinColumn(name = "book_id")},
             inverseJoinColumns = {@JoinColumn(name = "book_author_id")})
     private Set<BookAuthor> authors = new HashSet<>();
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "genreId")
+    @Column(name = "genres")
+    private Set<BookGenre> genres;
+    @OneToOne
+    @PrimaryKeyJoinColumn(name="language")
+    private BookLanguage language;
 }

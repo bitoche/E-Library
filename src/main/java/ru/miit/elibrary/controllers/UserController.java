@@ -72,8 +72,28 @@ public class UserController {
         var resp = userService.getById(userId);
         return resp != null ? ResponseEntity.ok(resp) : ResponseEntity.notFound().build();
     }
-
-
-    //вход, аутентификация, регистрация
-
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешное обновление"),
+            @ApiResponse(responseCode = "400", description = "Не существует пользователя с таким Email"),
+            @ApiResponse(responseCode = "401", description = "Не существует роли с таким названием"),
+            @ApiResponse(responseCode = "444", description = "Пользователь не найден (UserService)")
+    })
+    @PutMapping("/addRole")
+    public ResponseEntity<User> updateUser(@Parameter(description = "ID пользователя", required = true)
+                                               @RequestParam String email,
+                                           @Parameter(description = "ID роли для добавления", required = true)
+                                                @RequestParam String roleName){
+        var currUser = userService.getUserByUsername(email);
+        if (currUser==null){
+            return ResponseEntity.status(400).build();
+        }
+        var currRole = userService.getUserRoleByRole_name(roleName);
+        if (currRole==null){
+            return ResponseEntity.status(401).build();
+        }
+        currUser.addRole(currRole);
+        return userService.addRoleUpdate(currUser)
+                ? ResponseEntity.ok(currUser)
+                : ResponseEntity.status(444).build();
+    }
 }

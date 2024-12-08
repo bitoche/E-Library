@@ -62,9 +62,25 @@ public class AuthController {
         return response;
     }
 
-    @GetMapping("/get-my-authorities")
-    public ResponseEntity<Principal> getMyAuthorities(Principal principal){
-        return ResponseEntity.ok(principal);
+    @GetMapping("/check-adm")
+    public ResponseEntity<?> checkAdmPriv(){
+        return ResponseEntity.ok("У вас есть привелении администратора");
+    }
+    @GetMapping("/check-teacher")
+    public ResponseEntity<?> checkTeacherPriv(){
+        return ResponseEntity.ok("У вас есть привелении преподавателя");
+    }
+    @GetMapping("/check-dev")
+    public ResponseEntity<?> checkDevPriv(){
+        return ResponseEntity.ok("У вас есть привелении разработчика");
+    }
+    @GetMapping("/logout")
+    public ResponseEntity<?> logout(){
+        return ResponseEntity.ok("Вы успешно вышли из аккаунта");
+    }
+    @GetMapping("/login")
+    public ResponseEntity<?> login(){
+        return ResponseEntity.ok("*todo переход на страницу входа*"); // todo сделать переход на страницу входа
     }
 }
 

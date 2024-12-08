@@ -48,17 +48,19 @@ public class SecurityConfig {
                 "/swagger-resources/**"
         };
         final String[] ADMIN_ENDPOINTS = {
+                "/auth/check-adm",
                 "/api/admin/**"
         };
         final String[] TEACHER_ENDPOINTS = {
+                "/auth/check-teacher",
                 "/api/teacher/**"
         };
         final String[] RESOURCES_ENDPOINTS = {
                 "/css/**",
                 "/js/**",
                 "/res/**",
-                "./templates/schemes/**",
-                "static/favicon.ico"
+                "/./templates/schemes/**",
+                "/static/favicon.ico"
         };
         final String[] NON_AUTHORIZED_ENDPOINTS = {
                 "/check-email",
@@ -67,6 +69,7 @@ public class SecurityConfig {
                 "/confirm-account"
         };
         final String[] temp_DEVELOPER_ENDPOINTS = {
+                "/auth/check-dev",
                 "/api/user/changeUser",
         };
         http
@@ -74,25 +77,23 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
-                                .requestMatchers(RESOURCES_ENDPOINTS)
-                                                .permitAll()
-                                .requestMatchers(NON_AUTHORIZED_ENDPOINTS)
-                                                .permitAll()
-                                .requestMatchers(SWAGGER_ENDPOINTS)
-                                                .permitAll()
-                                .requestMatchers(temp_DEVELOPER_ENDPOINTS)
-                                                .hasAuthority("DEV")
+                                .requestMatchers(RESOURCES_ENDPOINTS).permitAll()
+                                .requestMatchers(NON_AUTHORIZED_ENDPOINTS).permitAll()
+                                .requestMatchers(SWAGGER_ENDPOINTS).permitAll()
+                                .requestMatchers(temp_DEVELOPER_ENDPOINTS).hasAuthority("DEV")
+                                .requestMatchers(ADMIN_ENDPOINTS).hasAuthority("ADMIN")
+                                .requestMatchers(TEACHER_ENDPOINTS).hasAuthority("TEACHER")
                                 .anyRequest().permitAll() // permitAll если нужно чтобы любой мог любые другие запросы делать
                 )
                 .formLogin(formLogin -> formLogin
-                        .loginPage("/login")
-                        .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/", true)
+                        .loginPage("/auth/login")
+                        .loginProcessingUrl("/auth/loginProcessing")
+                        .defaultSuccessUrl("/")
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )
                 .logout(logout ->
-                        logout.logoutUrl("/logout")
+                        logout.logoutUrl("/auth/logout")
                                 .logoutSuccessUrl("/")
                                 .invalidateHttpSession(true)
                 )
