@@ -16,9 +16,9 @@ public class BookStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="book_status_id")
-    private Integer book_status_id;
+    private Integer bookStatusId;
     @Column(name="status_name")
-    private String status_name;
-    @OneToMany(mappedBy = "book_id")
+    private String statusName;
+    @OneToMany(mappedBy = "bookId")
     private List<Book> books;
 }

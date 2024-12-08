@@ -19,20 +19,20 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="book_id")
-    private Long book_id;
+    private Long bookId;
     @Column(name="book_name")
-    private String book_name;
+    private String bookName;
     @Column(name="release_date")
-    private Date release_date;
+    private Date releaseDate;
     @Column(name="number_of_pages")
-    private Integer number_of_pages;
+    private Integer pagesNumber;
     @Column(name="description")
     private String description;
     @Column(name="identifier")
     private String identifier;
     @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name="book_status")
-    private BookStatus book_status;
+    private BookStatus bookStatus;
     @ManyToMany(cascade = {CascadeType.ALL})
     @JoinTable(name = "book_to_publishing_house",
             joinColumns = {@JoinColumn(name = "book_id")},

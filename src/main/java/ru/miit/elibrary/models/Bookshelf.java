@@ -16,10 +16,10 @@ public class Bookshelf {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="shelf_id")
-    private Integer shelf_id;
+    private Integer shelfId;
     @Column(name="shelf_number")
-    private Integer shelf_number;
+    private Integer shelfNumber;
     @Column(name="books")
-    @OneToMany(mappedBy = "book_id")
+    @OneToMany(mappedBy = "bookId")
     private List<Book> books;
 }

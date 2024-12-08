@@ -42,13 +42,13 @@ public class AuthController {
         user.addRole(userService.getUserRoleByRole_name("DEACTIVATED")); // делаем учетку неактивированной, дальше todo привязать логику деактивированной учетки
         user.setPassword(password);
         user.setEmail(email);
-        user.setFirst_name(firstName);
-        user.setSecond_name(secondName);
+        user.setFirstName(firstName);
+        user.setSecondName(secondName);
         if (thirdName!=null && !thirdName.isEmpty()){
-            user.setThird_name(thirdName);
+            user.setThirdName(thirdName);
         }
         if (birthDate!=null){
-            user.setDate_of_birth(birthDate);
+            user.setBirthDate(birthDate);
         }
         return userService.save(user) ? ResponseEntity.ok(user) : ResponseEntity.badRequest().body("Error in registering. Perhaps, username exists.");
     }

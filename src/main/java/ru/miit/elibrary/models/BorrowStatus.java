@@ -14,7 +14,7 @@ public class BorrowStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="borrow_status_id")
-    private Integer borrow_status_id;
+    private Integer borrowStatusId;
     @Column(name="status_name")
-    private String status_name;
+    private String statusName;
 }

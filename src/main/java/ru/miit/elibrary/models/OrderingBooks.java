@@ -16,11 +16,11 @@ public class OrderingBooks {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="ordering_id")
-    private Long ordering_id;
+    private Long orderingId;
     @Column(name="ordering_date")
-    private Date ordering_date;
+    private Date orderingDate;
     @Column(name="expected_arrival_date")
-    private Date expected_arrival_date;
+    private Date expectedArrivalDate;
     @JoinColumn(name="administrator")
     @ManyToOne
     private User administrator;

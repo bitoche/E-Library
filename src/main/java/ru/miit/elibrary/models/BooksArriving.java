@@ -17,11 +17,11 @@ public class BooksArriving {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="arriving_id")
-    private Long arriving_id;
+    private Long arrivingId;
     @Column(name="arriving_date")
-    private Date arriving_date;
+    private Date arrivingDate;
     @Column(name="arrived_books")
-    private String arrived_books;
+    private String arrivedBooks;
     @OneToOne
     @PrimaryKeyJoinColumn(name="ordering")
     private OrderingBooks ordering;

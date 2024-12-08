@@ -15,13 +15,13 @@ public class BookToBookRelation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="relation_id")
-    private Integer relation_id;
+    private Integer relationId;
     @Column(name="relation_description")
-    private String relation_description;
+    private String relationDescription;
     @Column(name="main_book")
-    private Long main_book;
+    private Long mainBook;
     @Column(name="related_book")
-    private Long related_book;
+    private Long relatedBook;
     @ManyToOne
     @JoinColumn(name="relation")
     private BookRelation relation;

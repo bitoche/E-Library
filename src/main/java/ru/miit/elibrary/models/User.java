@@ -1,21 +1,17 @@
 package ru.miit.elibrary.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
-import java.awt.*;
 import java.sql.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 @Data
 @Entity
@@ -27,20 +23,20 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="user_id")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Long user_id;
+    private Long userId;
     @NotNull(message = "first name must be specified")
     @Column(name="first_name")
-    private String first_name;
+    private String firstName;
     @NotNull(message = "second name must be specified")
     @Column(name="second_name")
-    private String second_name;
+    private String secondName;
     @Nullable
     @Column(name="third_name")
-    private String third_name;
+    private String thirdName;
     @Nullable
     @Column(name="date_of_birth")
     @Schema(type = "string", format = "date", example = "2005-01-01")
-    private Date date_of_birth;
+    private Date birthDate;
     @Column(name="email", unique = true)
     @Email(message = "email must be in a email format")
     private String email;
@@ -67,44 +63,44 @@ public class User {
         return this.email;
     }
 
-    public Long getUser_id() {
-        return user_id;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser_id(Long user_id) {
-        this.user_id = user_id;
+    public void setUserId(Long user_id) {
+        this.userId = user_id;
     }
 
-    public String getFirst_name() {
-        return first_name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFirst_name(String first_name) {
-        this.first_name = first_name;
+    public void setFirstName(String first_name) {
+        this.firstName = first_name;
     }
 
-    public String getSecond_name() {
-        return second_name;
+    public String getSecondName() {
+        return secondName;
     }
 
-    public void setSecond_name(String second_name) {
-        this.second_name = second_name;
+    public void setSecondName(String second_name) {
+        this.secondName = second_name;
     }
 
-    public String getThird_name() {
-        return third_name;
+    public String getThirdName() {
+        return thirdName;
     }
 
-    public void setThird_name(String third_name) {
-        this.third_name = third_name;
+    public void setThirdName(String third_name) {
+        this.thirdName = third_name;
     }
 
-    public Date getDate_of_birth() {
-        return date_of_birth;
+    public Date getBirthDate() {
+        return birthDate;
     }
 
-    public void setDate_of_birth(Date date_of_birth) {
-        this.date_of_birth = date_of_birth;
+    public void setBirthDate(Date date_of_birth) {
+        this.birthDate = date_of_birth;
     }
 
     public void setEmail(String email) {

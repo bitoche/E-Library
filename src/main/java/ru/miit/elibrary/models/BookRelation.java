@@ -14,7 +14,7 @@ public class BookRelation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="relation_id")
-    private Integer relation_id;
+    private Integer relationId;
     @Column(name="relation_name")
-    private String relation_name;
+    private String relationName;
 }

@@ -17,9 +17,9 @@ public class PublishingHouse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="publishing_house_id")
-    private Long publishing_house_id;
+    private Long publishingHouseId;
     @Column(name="publishing_house_name")
-    private String publishing_house_name;
+    private String publishingHouseName;
     @ManyToMany(mappedBy = "publishingHouses")
     private Set<Book> books = new HashSet<>();
 }

@@ -16,12 +16,12 @@ public class EntryCode {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="code_id")
-    private Long code_id;
+    private Long codeId;
     @Column(name="code")
     private String code;
     @PrimaryKeyJoinColumn(name="user")
     @OneToOne
     private User user;
     @Column(name="expire_dttm")
-    private Date expire_dttm;
+    private Date expireDateTime;
 }

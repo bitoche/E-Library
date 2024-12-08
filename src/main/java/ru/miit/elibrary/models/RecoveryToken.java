@@ -16,12 +16,12 @@ public class RecoveryToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="token_id")
-    private Long token_id;
+    private Long tokenId;
     @Column(name="token")
     private String token;
     @PrimaryKeyJoinColumn(name="user")
     @OneToOne
     private User user;
     @Column(name="expire_dttm")
-    private Date expire_dttm;
+    private Date expireDateTime;
 }
