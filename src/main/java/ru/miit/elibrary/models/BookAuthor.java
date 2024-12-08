@@ -17,7 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class BookAuthor {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="author_id")
     private Long author_id;
     @Column(name="first_name")

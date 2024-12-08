@@ -20,7 +20,7 @@ public class AppUserDetails implements UserDetails {
         if(!(user.getRoles() == null) && !user.getRoles().isEmpty()){
             for (UserRole role:
                     user.getRoles()) {
-                authorities.add(new SimpleGrantedAuthority(role.getRole_name()));
+                authorities.add(new SimpleGrantedAuthority(role.getRoleName()));
             }
         }
 

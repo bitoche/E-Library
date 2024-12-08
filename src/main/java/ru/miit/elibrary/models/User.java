@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -41,22 +42,23 @@ public class User {
     @Schema(type = "string", format = "date", example = "2005-01-01")
     private Date date_of_birth;
     @Column(name="email", unique = true)
-    @Pattern(regexp = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$", message = "email должен быть в формате почты (example@example.example)")
-    @Schema(type = "string", format = "email", example = "user@example.com")
-    @NotNull(message = "email is used like login. it must be specified")
+    @Email(message = "email must be in a email format")
     private String email;
     @Column(name="password")
     @NotNull(message = "password must be specified")
     private String password;
-    @ManyToMany(cascade = {CascadeType.ALL})
+    @ManyToMany(fetch = FetchType.EAGER) // fetch_type eager - жадная загрузка. сразу при запросе пользователя загружаются роли.
     @JoinTable(name = "user_to_user_role",
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "user_role_id")})
     @NotNull(message = "user must contains at least one role")
     private Set<UserRole> roles = new HashSet<>();
     //как будто бы роли не должны быть many to many
-    public List<UserRole> getRoles(){
-        return this.roles.stream().toList();
+    public Set<UserRole> getRoles(){
+        return this.roles;
+    }
+    public void addRole(UserRole userRole){
+        this.roles.add(userRole);
     }
     public String getPassword(){
         return this.password;

@@ -8,6 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface IUserRepository extends JpaRepository<User, Long> {
+
     Optional<User> findAppUserByEmail(String email);
 
     //для регистрации и подтверждения входа по имейл

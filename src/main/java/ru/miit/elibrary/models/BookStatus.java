@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 public class BookStatus {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="book_status_id")
     private Integer book_status_id;
     @Column(name="status_name")

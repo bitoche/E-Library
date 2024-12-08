@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class BooksArriving {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="arriving_id")
     private Long arriving_id;
     @Column(name="arriving_date")

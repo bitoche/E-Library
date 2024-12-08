@@ -14,7 +14,7 @@ import java.sql.Date;
 @NoArgsConstructor
 public class OrderingBooks {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="ordering_id")
     private Long ordering_id;
     @Column(name="ordering_date")

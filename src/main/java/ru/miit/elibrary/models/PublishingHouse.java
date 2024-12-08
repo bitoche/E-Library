@@ -15,7 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class PublishingHouse {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="publishing_house_id")
     private Long publishing_house_id;
     @Column(name="publishing_house_name")

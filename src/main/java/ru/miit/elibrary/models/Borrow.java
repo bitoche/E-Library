@@ -14,7 +14,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class Borrow {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="borrow_id")
     private Long borrow_id;
     @Column(name="borrow_date")

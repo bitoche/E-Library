@@ -13,7 +13,7 @@ import org.hibernate.annotations.Cascade;
 @NoArgsConstructor
 public class BookToBookRelation {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="relation_id")
     private Integer relation_id;
     @Column(name="relation_description")

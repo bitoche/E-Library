@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Bookshelf {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="shelf_id")
     private Integer shelf_id;
     @Column(name="shelf_number")

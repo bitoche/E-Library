@@ -14,7 +14,7 @@ import java.sql.Date;
 @NoArgsConstructor
 public class RecoveryToken {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="token_id")
     private Long token_id;
     @Column(name="token")
