@@ -5,4 +5,5 @@ import org.springframework.stereotype.Repository;
 import ru.miit.elibrary.models.Book;
 @Repository
 public interface IBookRepository extends JpaRepository<Book, Long> {
+    boolean existsByIdentifier(String identifier);
 }

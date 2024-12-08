@@ -1,5 +1,6 @@
 package ru.miit.elibrary.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,10 +16,26 @@ import java.util.List;
 public class BookStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Column(name="book_status_id")
     private Integer bookStatusId;
     @Column(name="status_name")
     private String statusName;
-    @OneToMany(mappedBy = "bookId")
-    private List<Book> books;
+
+    public Integer getBookStatusId() {
+        return bookStatusId;
+    }
+
+    public void setBookStatusId(Integer bookStatusId) {
+        this.bookStatusId = bookStatusId;
+    }
+
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
+    }
+
 }

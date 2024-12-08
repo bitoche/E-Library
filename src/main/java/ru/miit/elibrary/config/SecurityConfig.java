@@ -49,7 +49,7 @@ public class SecurityConfig {
         };
         final String[] ADMIN_ENDPOINTS = {
                 "/auth/check-adm",
-                "/api/admin/**"
+                "/api/adm/**"
         };
         final String[] TEACHER_ENDPOINTS = {
                 "/auth/check-teacher",

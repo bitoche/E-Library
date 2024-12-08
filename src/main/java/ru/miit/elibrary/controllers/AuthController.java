@@ -1,5 +1,6 @@
 package ru.miit.elibrary.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -26,6 +27,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @Operation(summary = "Регистрация нового пользователя")
     public ResponseEntity<?> registerUser(
             @RequestParam String firstName,
             @RequestParam String secondName,
@@ -40,6 +42,9 @@ public class AuthController {
             userService.saveUserRole(deactRole);
         } // на один раз
         user.addRole(userService.getUserRoleByRole_name("DEACTIVATED")); // делаем учетку неактивированной, дальше todo привязать логику деактивированной учетки
+        // здесь должен вызываться метод создания кода для входа,
+        // с помощью которого будет осуществляться подтверждение учетной записи
+        // этот код должен быть длиннее, чем при обычном входе в аккаунт.
         user.setPassword(password);
         user.setEmail(email);
         user.setFirstName(firstName);
@@ -54,7 +59,7 @@ public class AuthController {
     }
 
 
-    @GetMapping("/check-email")
+    @GetMapping("/check-email-availability")
     @ResponseBody
     public Map<String, Boolean> checkUsernameAvailability(@RequestParam("email") String email) {
         Map<String, Boolean> response = new HashMap<>();
@@ -62,23 +67,23 @@ public class AuthController {
         return response;
     }
 
-    @GetMapping("/check-adm")
+    @GetMapping("/check-adm-privileges")
     public ResponseEntity<?> checkAdmPriv(){
         return ResponseEntity.ok("У вас есть привелении администратора");
     }
-    @GetMapping("/check-teacher")
+    @GetMapping("/check-teacher-privileges")
     public ResponseEntity<?> checkTeacherPriv(){
         return ResponseEntity.ok("У вас есть привелении преподавателя");
     }
-    @GetMapping("/check-dev")
+    @GetMapping("/check-dev-privileges")
     public ResponseEntity<?> checkDevPriv(){
         return ResponseEntity.ok("У вас есть привелении разработчика");
     }
-    @GetMapping("/logout")
+    @GetMapping("/logout") // todo проверить работу на фронте
     public ResponseEntity<?> logout(){
         return ResponseEntity.ok("Вы успешно вышли из аккаунта");
     }
-    @GetMapping("/login")
+    @GetMapping("/login") // переадресация на страницу входа
     public ResponseEntity<?> login(){
         return ResponseEntity.ok("*todo переход на страницу входа*"); // todo сделать переход на страницу входа
     }
