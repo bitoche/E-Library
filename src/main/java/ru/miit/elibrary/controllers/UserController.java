@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.miit.elibrary.models.User;
 import ru.miit.elibrary.models.UserRole;
+import ru.miit.elibrary.services.SAVETYPE;
 import ru.miit.elibrary.services.UserService;
 
 import java.util.List;
@@ -38,7 +39,7 @@ public class UserController {
     @Operation(summary = "Добавляет нового пользователя")
     @PostMapping("/createUser")
     public ResponseEntity<User> createUser(@RequestBody User user){
-        return userService.save(user)
+        return userService.save(user, SAVETYPE.WITH_ROLE_INCLUDED)
                 ? ResponseEntity.ok(user)
                 : ResponseEntity.badRequest().build();
     }

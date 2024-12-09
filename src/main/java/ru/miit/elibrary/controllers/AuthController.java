@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.miit.elibrary.models.User;
 import ru.miit.elibrary.models.UserRole;
+import ru.miit.elibrary.services.SAVETYPE;
 import ru.miit.elibrary.services.UserService;
 
 import java.security.Principal;
@@ -55,7 +56,7 @@ public class AuthController {
         if (birthDate!=null){
             user.setBirthDate(birthDate);
         }
-        return userService.save(user) ? ResponseEntity.ok(user) : ResponseEntity.badRequest().body("Error in registering. Perhaps, username exists.");
+        return userService.save(user, SAVETYPE.STANDARD_REGISTER) ? ResponseEntity.ok(user) : ResponseEntity.badRequest().body("Error in registering. Perhaps, username exists.");
     }
 
 

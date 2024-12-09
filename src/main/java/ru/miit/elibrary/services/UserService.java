@@ -4,11 +4,15 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.miit.elibrary.models.EntryCode;
 import ru.miit.elibrary.models.User;
 import ru.miit.elibrary.models.UserRole;
+import ru.miit.elibrary.repository.IEntryCodeRepository;
 import ru.miit.elibrary.repository.IUserRepository;
 import ru.miit.elibrary.repository.IUserRoleRepository;
 
@@ -21,6 +25,10 @@ public class UserService{
     private IUserRepository userRepository;
     @Autowired
     private IUserRoleRepository userRoleRepository;
+    @Autowired
+    private IEntryCodeRepository entryCodeRepository;
+    @Autowired
+    private EmailService emailService;
     public List<UserRole> getAllUserRoles(){
         return userRoleRepository.findAll();
     }
@@ -41,17 +49,64 @@ public class UserService{
     public User getById(Long aLong) {
         return userRepository.findById(aLong).get();
     }
+    @Autowired
+    private JdbcTemplate jdbcTemplate; // для транзакции
+    @Transactional
+    public EntryCode createEntryCodeWithSQL(EntryCode entryCode) {
+        // Проверяем, существует ли пользователь с указанным email
+        String userSql = "SELECT user_id FROM public.\"user\" WHERE email = ?";
+        Long userId = jdbcTemplate.queryForObject(userSql, Long.class, entryCode.getUser().getEmail());
 
-    public boolean save(User obj) {
-        // убираем на бэке возможность регать два аккаунта на одну почту
-        if (userRepository.findAppUserByEmail(obj.getEmail()).isPresent()){ // пользователь уже существует?
-            return false;
+        if (userId == null) {
+            throw new IllegalArgumentException("User with email " + entryCode.getUser().getEmail() + " does not exist");
         }
-        castStringArrRolesToType(obj); // заменяем без id из запроса на роли из бд
-        //устанавливаем хешированный пароль
+
+        // Вставляем EntryCode в базу данных
+        String entryCodeSql = "INSERT INTO public.entry_code (code, expire_dttm, \"user\") VALUES (?, ?, ?) RETURNING code_id";
+        Long entryCodeId = jdbcTemplate.queryForObject(entryCodeSql, Long.class,
+                entryCode.getCode(),
+                entryCode.getExpireDateTime(),
+                userId);
+
+        // Устанавливаем сгенерированный ID для EntryCode и возвращаем его
+        entryCode.setCodeId(entryCodeId);
+        return entryCode;
+    }
+    @Transactional
+    public boolean save(User obj, SAVETYPE saveType) {
+        if (userRepository.findAppUserByEmail(obj.getEmail()).isPresent()) {
+            return false; // пользователь уже существует
+        }
+
+        if (saveType == SAVETYPE.WITH_ROLE_INCLUDED) {
+            castStringArrRolesToType(obj); // Приводим роли к существующим в БД
+        } else {
+            obj.addRole(userRoleRepository.getUserRoleByRoleName("DEACTIVATED")); // Роль по умолчанию
+        }
+
         PasswordEncoder pe = new BCryptPasswordEncoder();
-        obj.setPassword(pe.encode(obj.getPassword()));
-        userRepository.save(obj);
+        obj.setPassword(pe.encode(obj.getPassword())); // Хэшируем пароль
+
+        // Сохраняем пользователя
+        obj = userRepository.save(obj);
+
+        // Создаём EntryCode
+        EntryCode firstEntryCode = new EntryCode(obj);
+
+        // Сохраняем EntryCode
+        createEntryCodeWithSQL(firstEntryCode);
+
+        // Отправляем письмо
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setFrom("tszyuconstantin@yandex.ru");
+        mailMessage.setTo(obj.getEmail());
+        mailMessage.setSubject("Завершение создания аккаунта E-LIbrary");
+        mailMessage.setText("Код для завершения регистрации:\n"
+                + "<strong>" + firstEntryCode.getCode() + "</strong>\n"
+                + "Этот код действителен в течение 20 минут (до " + firstEntryCode.getExpireDateTime() + ")"
+                + "\n\nВаш логин для входа: " + obj.getEmail());
+        emailService.sendEmail(mailMessage);
+
         return true;
     }
     //различие с save в том, что здесь нам НЕОБХОДИМО, чтобы пользователь уже существовал

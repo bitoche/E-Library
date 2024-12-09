@@ -27,18 +27,7 @@ public class AdminController {
         this.mainBookService = mainBookService;
     }
     //getall
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Успешное получен список книг"),
-            @ApiResponse(responseCode = "499", description = "Не найдено ни одной книги")
-    })
-    @Operation(summary = "Позволяет получить список книг из БД")
-    @GetMapping("/getBooks")
-    public ResponseEntity<?> getAllBooks(){
-        var allBooks = mainBookService.getAllBooks();
-        return allBooks !=null
-                ? ResponseEntity.ok(allBooks)
-                : ResponseEntity.status(499).body("Не найдено ни одной книги");
-    }
+
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешное получен список статусов книг"),
             @ApiResponse(responseCode = "499", description = "Не найдено ни одного статуса книги")
@@ -107,6 +96,22 @@ public class AdminController {
                 book.getGenres()));
         Book createdBook = mainBookService.createBookWithSQL(book);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdBook);
+    }
+    @Operation(summary = "Обновить книгу в БД")
+    @PutMapping(value = "/updateBook", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateBook(@RequestBody @Validated Book book){
+        book.setBookStatus(mainBookService.castBookStatusNameToBookStatus(
+                book.getBookStatus()));
+        book.setLanguage(mainBookService.castBookLanguageNameToBookLanguage(
+                book.getLanguage().getLanguageName()));
+        book.setAuthors(mainBookService.castBookAutorIdentifiersToBookAutors(
+                book.getAuthorIdentifiers()));
+        book.setPublishingHouses(mainBookService.castBookPublishingHouseWOIdToPublishingHouses(
+                book.getPublishingHouses()));
+        book.setGenres(mainBookService.castBookGenresWOIdToBookGenres(
+                book.getGenres()));
+        Book updatedBook = mainBookService.updateBookWithSQL(book);
+        return ResponseEntity.status(200).body(updatedBook);
     }
     @Operation(summary = "Добавить статус книги в БД")
     @PostMapping("/addBookStatus")
@@ -185,5 +190,15 @@ public class AdminController {
         return resp!=null
                 ? ResponseEntity.ok(bookLanguage)
                 : ResponseEntity.status(444).body("Такой жанр книги уже существует (bookStatus.name)");
+    }
+    @DeleteMapping("/deleteBook")
+    @Operation(summary = "Удаляет книгу по идентификатору книги")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Книга успешно удалена"),
+            @ApiResponse(responseCode = "444", description = "Такой книги не существует")
+    })
+    public ResponseEntity<?> deleteBookByIdentifier(@RequestParam String identifier){
+        var resp = mainBookService.deleteBookByIdentifier(identifier);
+        return resp ? ResponseEntity.status(200).build() : ResponseEntity.status(444).build();
     }
 }

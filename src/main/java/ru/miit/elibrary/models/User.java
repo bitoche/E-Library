@@ -17,7 +17,7 @@ import java.util.Set;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "user",schema = "public")
+@Table(name = "\"user\"",schema = "public")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,7 +43,7 @@ public class User {
     @Column(name="password")
     @NotNull(message = "password must be specified")
     private String password;
-    @ManyToMany(fetch = FetchType.EAGER) // fetch_type eager - жадная загрузка. сразу при запросе пользователя загружаются роли.
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL) // fetch_type eager - жадная загрузка. сразу при запросе пользователя загружаются роли.
     @JoinTable(name = "user_to_user_role",
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "user_role_id")})
