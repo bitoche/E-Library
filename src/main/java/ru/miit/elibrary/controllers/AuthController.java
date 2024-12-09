@@ -1,7 +1,10 @@
 package ru.miit.elibrary.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
@@ -11,7 +14,6 @@ import ru.miit.elibrary.models.UserRole;
 import ru.miit.elibrary.services.SAVETYPE;
 import ru.miit.elibrary.services.UserService;
 
-import java.security.Principal;
 import java.sql.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -87,6 +89,21 @@ public class AuthController {
     @GetMapping("/login") // переадресация на страницу входа
     public ResponseEntity<?> login(){
         return ResponseEntity.ok("*todo переход на страницу входа*"); // todo сделать переход на страницу входа
+    }
+    @Operation(summary = "Ввод entryCode !ПОСЛЕ РЕГИСТРАЦИИ!, требует логин и пароль пользователя")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Учетная запись подтверждена"),
+            @ApiResponse(responseCode = "300", description = "Неверный entryCode"),
+            @ApiResponse(responseCode = "301", description = "Пользователя не существует"),
+            @ApiResponse(responseCode = "303", description = "Кода не существовало. Выдан новый entryCode"),
+            @ApiResponse(responseCode = "302", description = "Неверный пароль"),
+            @ApiResponse(responseCode = "310", description = "EntryCode устарел. Выслан новый")
+    })
+    @PostMapping("/codeAfterRegister")
+    public ResponseEntity<?> getAccessToAccount(@RequestParam @NotNull String entryCode,
+                                                @RequestParam @NotNull String email,
+                                                @RequestParam @NotNull String password){
+        return userService.checkAccess(entryCode, email, password);
     }
 }
 

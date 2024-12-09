@@ -2,20 +2,13 @@ package ru.miit.elibrary.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.concurrent.ThreadLocalRandom;
 
 
-@Data
+
 @Entity
 @Table(name="entry_code",schema = "public")
-@AllArgsConstructor
-@NoArgsConstructor
 public class EntryCode {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,6 +30,9 @@ public class EntryCode {
         this.code = String.valueOf(sixDigitNumber);
         this.user = user;
         this.expireDateTime = LocalDateTime.now().plusMinutes(20); // 20 минут в миллисекундах
+    }
+
+    public EntryCode() {
     }
 
     public Long getCodeId() {

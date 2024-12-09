@@ -24,26 +24,35 @@ public class User {
     @Column(name="user_id")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long userId;
+
     @NotNull(message = "first name must be specified")
     @Column(name="first_name")
     private String firstName;
+
     @NotNull(message = "second name must be specified")
     @Column(name="second_name")
     private String secondName;
+
     @Nullable
     @Column(name="third_name")
     private String thirdName;
+
     @Nullable
     @Column(name="date_of_birth")
     @Schema(type = "string", format = "date", example = "2005-01-01")
     private Date birthDate;
+
     @Column(name="email", unique = true)
     @Email(message = "email must be in a email format")
     private String email;
+
     @Column(name="password")
     @NotNull(message = "password must be specified")
     private String password;
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL) // fetch_type eager - жадная загрузка. сразу при запросе пользователя загружаются роли.
+
+    @ManyToMany(fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL)
+    // fetch_type eager - жадная загрузка. сразу при запросе пользователя загружаются роли.
     @JoinTable(name = "user_to_user_role",
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "user_role_id")})
@@ -55,6 +64,10 @@ public class User {
     }
     public void addRole(UserRole userRole){
         this.roles.add(userRole);
+    }
+    public void removeRoleIfExists(UserRole userRole){
+        this.roles.remove(userRole);
+        userRole.getUsers().remove(this); // удаляем связанные записи в role
     }
     public String getPassword(){
         return this.password;

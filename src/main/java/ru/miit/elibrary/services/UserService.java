@@ -16,6 +16,7 @@ import ru.miit.elibrary.repository.IEntryCodeRepository;
 import ru.miit.elibrary.repository.IUserRepository;
 import ru.miit.elibrary.repository.IUserRoleRepository;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -48,6 +49,70 @@ public class UserService{
 
     public User getById(Long aLong) {
         return userRepository.findById(aLong).get();
+    }
+    //
+    //!!!! данный метод используется ТОЛЬКО ПОСЛЕ РЕГИСТРАЦИИ, иначе удаляет учетную запись при устаревании entryCode
+    //
+    public ResponseEntity<?> checkAccess(String entryCode, String email, String password){
+        var currUser = userRepository.existsByEmail(email)
+                ? userRepository.findAppUserByEmail(email)
+                : Optional.<User>empty();
+        if (currUser.isPresent() && entryCodeRepository.existsByUser(currUser.get())){ // если пользователь существует и для него есть код
+            if(entryCodeRepository.getEntryCodeByUserId(currUser.get().getUserId())
+                    .getExpireDateTime().isBefore(LocalDateTime.now())){// если код устарел
+
+                var currEntryCode = entryCodeRepository.getEntryCodeByUserId(currUser.get().getUserId());
+                var userFromEntryCode = currEntryCode.getUser();
+                entryCodeRepository.delete(currEntryCode);
+                var newCode = new EntryCode(userFromEntryCode);
+                createEntryCodeWithSQL(newCode);
+                sendEnterCodeToEmail(newCode);
+
+                return ResponseEntity.status(310).build();
+            }
+            var currEntryCode = entryCodeRepository.getEntryCodeByUserId(currUser.get().getUserId()); // находим в бо нужный код по пользователю
+            if (Objects.equals(entryCode, currEntryCode.getCode())){ // если код в бд и код который передали совпадают
+                PasswordEncoder pe = new BCryptPasswordEncoder();
+                if (pe.matches(password, currUser.get().getPassword())){ // если переданный пароль совпадает с сохраненным
+
+                    entryCodeRepository.delete(currEntryCode);
+                    var enteredUser = currUser.get();
+
+                    //создаем роль если такой еще нет (работает один раз)
+                    if(!userRoleRepository.existsUserRoleByRoleName("ACTIVATED")){
+                        var activatedRole = new UserRole();
+                        activatedRole.setRoleName("ACTIVATED");
+                        saveUserRole(activatedRole);
+                    }
+
+                    enteredUser.addRole(userRoleRepository.getUserRoleByRoleName("ACTIVATED"));
+                    enteredUser.removeRoleIfExists(userRoleRepository.getUserRoleByRoleName("DEACTIVATED"));
+                    return ResponseEntity.status(200).body(enteredUser);
+                }
+                else return ResponseEntity.status(302).build();
+            }
+            else return ResponseEntity.status(300).build();
+        }
+        else{
+            if (currUser.isPresent()){ //если user все-таки существует, а значит для него нет entrycode
+                var newCode = new EntryCode(currUser.get());
+                createEntryCodeWithSQL(newCode);
+                sendEnterCodeToEmail(newCode); // отправляем новый entrycode на почту
+                return ResponseEntity.status(303).build();
+            }
+            return ResponseEntity.status(301).build();
+        }
+    }
+    public void sendEnterCodeToEmail(EntryCode ec){
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setFrom("tszyuconstantin@yandex.ru");
+        mailMessage.setTo(ec.getUser().getEmail());
+        mailMessage.setSubject("Завершение создания аккаунта E-LIbrary");
+        mailMessage.setText("Код для завершения регистрации:\n"
+                + "<strong>" + ec.getCode() + "</strong>\n"
+                + "Этот код действителен в течение 20 минут (до " + ec.getExpireDateTime() + ")"
+                + "\n\nВаш логин для входа: " + ec.getUser().getEmail());
+        emailService.sendEmail(mailMessage);
     }
     @Autowired
     private JdbcTemplate jdbcTemplate; // для транзакции
@@ -97,18 +162,11 @@ public class UserService{
         createEntryCodeWithSQL(firstEntryCode);
 
         // Отправляем письмо
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setFrom("tszyuconstantin@yandex.ru");
-        mailMessage.setTo(obj.getEmail());
-        mailMessage.setSubject("Завершение создания аккаунта E-LIbrary");
-        mailMessage.setText("Код для завершения регистрации:\n"
-                + "<strong>" + firstEntryCode.getCode() + "</strong>\n"
-                + "Этот код действителен в течение 20 минут (до " + firstEntryCode.getExpireDateTime() + ")"
-                + "\n\nВаш логин для входа: " + obj.getEmail());
-        emailService.sendEmail(mailMessage);
+
 
         return true;
     }
+
     //различие с save в том, что здесь нам НЕОБХОДИМО, чтобы пользователь уже существовал
     public boolean update(User obj){
         if (userRepository.findAppUserByEmail(obj.getEmail()).isEmpty()){ // пользователь не существует?
