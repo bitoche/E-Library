@@ -20,6 +20,7 @@ import java.util.Set;
 @RestController
 @RequestMapping("/api/book")
 @Tag(name = "Юзер-контроллер книг", description = "Позволяет найти нужную книгу по автору, идентификатору, и т.д.")
+@CrossOrigin("http://localhost:3000/")
 public class BookController {
     @Autowired
     private final IBookRepository bookRepository;

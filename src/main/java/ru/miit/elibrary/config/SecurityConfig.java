@@ -16,6 +16,7 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.cors.CorsConfiguration;
 import ru.miit.elibrary.services.AppUserDetailsService;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -74,6 +75,7 @@ public class SecurityConfig {
         };
         http
                 .httpBasic(withDefaults())
+                //.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests

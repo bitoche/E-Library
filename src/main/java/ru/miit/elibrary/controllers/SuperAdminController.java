@@ -17,6 +17,7 @@ import ru.miit.elibrary.services.UserService;
 @RestController
 @RequestMapping("/api/super")
 @Tag(name = "Управление ролями, созданием пользователей и т.д.")
+@CrossOrigin("http://localhost:3000/")
 public class SuperAdminController {
     private final UserService userService;
 

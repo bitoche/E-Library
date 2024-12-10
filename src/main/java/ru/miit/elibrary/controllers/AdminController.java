@@ -21,6 +21,7 @@ import java.sql.Date;
 @RestController
 @RequestMapping("/api/adm")
 @Tag(name = "Управление книгами, выдачей книг, заказами, и т.д.")
+@CrossOrigin("http://localhost:3000/")
 public class AdminController {
     private final MainBookService mainBookService;
     public AdminController(MainBookService mainBookService) {
