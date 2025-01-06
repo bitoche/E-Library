@@ -104,7 +104,7 @@ public class AuthController {
     public ResponseEntity<?> getAccessToAccount(@RequestParam @NotNull String entryCode,
                                                 @RequestParam @NotNull String email,
                                                 @RequestParam @NotNull String password){
-        return userService.checkAccess(entryCode, email, password);
+        return userService.checkAccess(entryCode, email, password, true);
     }
 }
 

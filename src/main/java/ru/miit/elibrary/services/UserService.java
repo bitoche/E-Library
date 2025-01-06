@@ -9,6 +9,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.miit.elibrary.dtos.MailMessageDTO;
 import ru.miit.elibrary.models.EntryCode;
 import ru.miit.elibrary.models.User;
 import ru.miit.elibrary.models.UserRole;
@@ -53,7 +54,7 @@ public class UserService{
     //
     //!!!! данный метод используется ТОЛЬКО ПОСЛЕ РЕГИСТРАЦИИ, иначе удаляет учетную запись при устаревании entryCode
     //
-    public ResponseEntity<?> checkAccess(String entryCode, String email, String password){
+    public ResponseEntity<?> checkAccess(String entryCode, String email, String password, boolean isRegister){
         var currUser = userRepository.existsByEmail(email)
                 ? userRepository.findAppUserByEmail(email)
                 : Optional.<User>empty();
@@ -66,7 +67,7 @@ public class UserService{
                 entryCodeRepository.delete(currEntryCode);
                 var newCode = new EntryCode(userFromEntryCode);
                 createEntryCodeWithSQL(newCode);
-                sendEnterCodeToEmail(newCode);
+                sendEnterCodeToEmail(newCode, isRegister);
 
                 return ResponseEntity.status(310).build();
             }
@@ -97,21 +98,23 @@ public class UserService{
             if (currUser.isPresent()){ //если user все-таки существует, а значит для него нет entrycode
                 var newCode = new EntryCode(currUser.get());
                 createEntryCodeWithSQL(newCode);
-                sendEnterCodeToEmail(newCode); // отправляем новый entrycode на почту
+                sendEnterCodeToEmail(newCode, isRegister); // отправляем новый entrycode на почту
                 return ResponseEntity.status(303).build();
             }
             return ResponseEntity.status(301).build();
         }
     }
-    public void sendEnterCodeToEmail(EntryCode ec){
+    public void sendEnterCodeToEmail(EntryCode ec, boolean isRegister){
+        // создаем новое сообщение по шаблону
+        var ecmm = new MailMessageDTO(ec, isRegister /*существует два entryCode:
+        для регистрации и для входа, сообщения для них выглядят по-разному*/);
         SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setFrom("tszyuconstantin@yandex.ru");
-        mailMessage.setTo(ec.getUser().getEmail());
-        mailMessage.setSubject("Завершение создания аккаунта E-LIbrary");
-        mailMessage.setText("Код для завершения регистрации:\n"
-                + "<strong>" + ec.getCode() + "</strong>\n"
-                + "Этот код действителен в течение 20 минут (до " + ec.getExpireDateTime() + ")"
-                + "\n\nВаш логин для входа: " + ec.getUser().getEmail());
+        //заполняем сообщение полями из заполненного шаблона
+        mailMessage.setFrom(ecmm.getSender());
+        mailMessage.setTo(ecmm.getReceiver());
+        mailMessage.setSubject(ecmm.getMailTitle());
+        mailMessage.setText(ecmm.getTextMessage());
+        //отправляем сообщение
         emailService.sendEmail(mailMessage);
     }
     @Autowired
@@ -154,7 +157,6 @@ public class UserService{
 
         // Сохраняем пользователя
         obj = userRepository.save(obj);
-
         // Создаём EntryCode
         EntryCode firstEntryCode = new EntryCode(obj);
 
@@ -162,7 +164,7 @@ public class UserService{
         createEntryCodeWithSQL(firstEntryCode);
 
         // Отправляем письмо
-
+        sendEnterCodeToEmail(firstEntryCode, true);
 
         return true;
     }
