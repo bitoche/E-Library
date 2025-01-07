@@ -2,6 +2,7 @@ package ru.miit.elibrary.models;
 
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,6 +38,7 @@ public class Book {
 
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @Column(name="description")
+    @Size(max=100000)
     private String description;
 
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)

@@ -9,11 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import ru.miit.elibrary.dtos.BookDTO;
+import ru.miit.elibrary.models.Book;
 import ru.miit.elibrary.models.BookAuthor;
 import ru.miit.elibrary.repository.IBookRepository;
 import ru.miit.elibrary.services.MainBookService;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Controller
@@ -30,6 +34,17 @@ public class BookController {
         this.bookRepository = bookRepository;
         this.mainBookService = mainBookService;
     }
+    private ResponseEntity<?> bookRespToBookDTO(@org.jetbrains.annotations.NotNull
+                                                List<Book> books){
+        if (!books.isEmpty()){
+            List<BookDTO> resp1 = new ArrayList<>();
+            for (Book b : books){
+                resp1.add(new BookDTO(b));
+            }
+            return ResponseEntity.status(200).body(resp1);
+        }
+        return ResponseEntity.status(201).build();
+    }
 
     @GetMapping("/byName")
     @ApiResponses(value = {
@@ -38,8 +53,7 @@ public class BookController {
     })
     public ResponseEntity<?> getBooksByName(@RequestParam String namePart){
         var resp = bookRepository.findAllByBookNameContaining(namePart);
-        return !resp.isEmpty() ? ResponseEntity.status(200).body(resp)
-                : ResponseEntity.status(201).build();
+        return bookRespToBookDTO(resp);
     }
 
     @GetMapping("/byAuthorIdentifier")
@@ -49,8 +63,7 @@ public class BookController {
     })
     public ResponseEntity<?> getBooksByAuthor(@RequestParam String authorIdentifier){
         var resp = bookRepository.findBooksByAuthorIdentifier(authorIdentifier);
-        return !resp.isEmpty() ? ResponseEntity.status(200).body(resp)
-                : ResponseEntity.status(201).build();
+        return bookRespToBookDTO(resp);
     }
     @GetMapping("/byBookIdentifier")
     @ApiResponses(value = {
@@ -59,7 +72,8 @@ public class BookController {
     })
     public ResponseEntity<?> getBooksByIdentifier(@RequestParam String fullIdentifier){
         var resp = bookRepository.findByIdentifier(fullIdentifier);
-        return resp!=null ? ResponseEntity.status(200).body(resp)
+        return resp!=null
+                ? ResponseEntity.status(200).body(new BookDTO(resp))
                 : ResponseEntity.status(201).build();
     }
 
@@ -70,8 +84,7 @@ public class BookController {
     })
     public ResponseEntity<?> getBooksByGenre(@RequestParam String genreName){
         var resp = bookRepository.findBooksByGenreName(genreName);
-        return resp!=null ? ResponseEntity.status(200).body(resp)
-                : ResponseEntity.status(201).build();
+        return bookRespToBookDTO(resp);
     }
 
     @GetMapping("/byBookReleaseYear/{releaseYear}")
@@ -81,33 +94,28 @@ public class BookController {
     })
     public ResponseEntity<?> getBooksByReleaseYear(@PathVariable int releaseYear){
         var resp = bookRepository.findBooksByReleaseYearNative(releaseYear);
-        return resp!=null && !resp.isEmpty() ? ResponseEntity.status(200).body(resp)
-                : ResponseEntity.status(201).build();
+        return bookRespToBookDTO(resp);
     }
 
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Успешное получен список книг"),
-            @ApiResponse(responseCode = "499", description = "Не найдено ни одной книги")
+            @ApiResponse(responseCode = "200", description = "Успешно получен список книг"),
+            @ApiResponse(responseCode = "201", description = "Не найдено ни одной книги")
     })
     @Operation(summary = "Позволяет получить список книг из БД")
     @GetMapping("/getBooks")
     public ResponseEntity<?> getAllBooks(){
-        var allBooks = mainBookService.getAllBooks();
-        return allBooks !=null
-                ? ResponseEntity.ok(allBooks)
-                : ResponseEntity.status(499).body("Не найдено ни одной книги");
+        var resp = mainBookService.getAllBooks();
+        return bookRespToBookDTO(resp);
     }
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешное получен список книг"),
-            @ApiResponse(responseCode = "499", description = "Не найдено ни одной книги")
+            @ApiResponse(responseCode = "201", description = "Не найдено ни одной книги")
     })
     @Operation(summary = "Позволяет книг (по полю название, год выпуска, идентификатор книги, идентификатор автора, и жанр)")
     @GetMapping("/search")
     public ResponseEntity<?> getBooksBySearchRequest(@RequestParam @NotNull String searchRequest){
         var resp = mainBookService.searchBooksFromSearchField(searchRequest);
-        return resp != null
-                ? ResponseEntity.ok(resp)
-                : ResponseEntity.status(499).body("Не найдено ни одной книги");
+        return bookRespToBookDTO(resp);
     }
 
 }

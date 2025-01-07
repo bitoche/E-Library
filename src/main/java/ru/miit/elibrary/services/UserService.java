@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.miit.elibrary.dtos.MailMessageDTO;
+import ru.miit.elibrary.dtos.UserDTO;
 import ru.miit.elibrary.models.EntryCode;
 import ru.miit.elibrary.models.User;
 import ru.miit.elibrary.models.UserRole;
@@ -88,7 +89,9 @@ public class UserService{
 
                     enteredUser.addRole(userRoleRepository.getUserRoleByRoleName("ACTIVATED"));
                     enteredUser.removeRoleIfExists(userRoleRepository.getUserRoleByRoleName("DEACTIVATED"));
-                    return ResponseEntity.status(200).body(enteredUser);
+                    //сохраняем пользователя
+                    userRepository.save(enteredUser);
+                    return ResponseEntity.status(200).body(new UserDTO(enteredUser));
                 }
                 else return ResponseEntity.status(302).build();
             }
@@ -96,7 +99,10 @@ public class UserService{
         }
         else{
             if (currUser.isPresent()){ //если user все-таки существует, а значит для него нет entrycode
-                var newCode = new EntryCode(currUser.get());
+                //проверяем а не зарегистрирован ли пользователь?
+                if (currUser.get().getRoles().contains(userRoleRepository.getUserRoleByRoleName("ACTIVATED"))) { //если у пользователя есть роль ACTIVATED
+                    return ResponseEntity.status(202).build();
+                }var newCode = new EntryCode(currUser.get());
                 createEntryCodeWithSQL(newCode);
                 sendEnterCodeToEmail(newCode, isRegister); // отправляем новый entrycode на почту
                 return ResponseEntity.status(303).build();

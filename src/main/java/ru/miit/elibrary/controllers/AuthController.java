@@ -44,7 +44,7 @@ public class AuthController {
             var deactRole = new UserRole();
             deactRole.setRoleName("DEACTIVATED");
             userService.saveUserRole(deactRole);
-        } // на один раз
+        } // если роли DEACTIVATED не существует - создаем
         user.addRole(userService.getUserRoleByRole_name("DEACTIVATED")); // делаем учетку неактивированной, дальше todo привязать логику деактивированной учетки
         // здесь должен вызываться метод создания кода для входа,
         // с помощью которого будет осуществляться подтверждение учетной записи
@@ -94,6 +94,7 @@ public class AuthController {
     @Operation(summary = "Ввод entryCode !ПОСЛЕ РЕГИСТРАЦИИ!, требует логин и пароль пользователя")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Учетная запись подтверждена"),
+            @ApiResponse(responseCode = "202", description = "Пользователь уже зарегистрирован"),
             @ApiResponse(responseCode = "300", description = "Неверный entryCode"),
             @ApiResponse(responseCode = "301", description = "Пользователя не существует"),
             @ApiResponse(responseCode = "303", description = "Кода не существовало. Выдан новый entryCode"),
