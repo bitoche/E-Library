@@ -2,6 +2,7 @@ package ru.miit.elibrary.services;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -40,12 +41,15 @@ public class MainBookService {
     }
 
     // getall
+    @Transactional
     public List<Book> getAllBooks(){
-        List<Book> allBooks = bookRepository.findAll();
-        if(allBooks.isEmpty()){
-           return null;
+        var r = bookRepository.findAllWithDetails();
+        for (Book book : r) {
+            Hibernate.initialize(book.getAuthors());
+            Hibernate.initialize(book.getGenres());
+            Hibernate.initialize(book.getPublishingHouses());
         }
-        return allBooks;
+        return r;
     }
     public List<BookStatus> getAllBookStatuses(){
         List<BookStatus> allBookStatuses = bookStatusRepository.findAll();

@@ -243,11 +243,11 @@ public class UserService {
         return ResponseEntity.ok().body("Одноразовый код уже был отправлен");
     }
 
-    public ResponseEntity<?> loginWithOneTimeCode(String email, String password, String code) {
+    public Boolean loginWithOneTimeCode(String email, String password, String code) {
         // Проверяем, существует ли пользователь
         Optional<User> userOptional = userRepository.findAppUserByEmail(email);
         if (userOptional.isEmpty()) {
-            return ResponseEntity.status(404).body("Пользователь не найден");
+            return false;
         }
 
         User user = userOptional.get();
@@ -255,19 +255,19 @@ public class UserService {
         // Проверяем пароль
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            return ResponseEntity.status(401).body("Неверный пароль");
+            return false;
         }
 
         // Проверяем код
         EntryCode entryCode = entryCodeRepository.findByUserAndCode(user, code);
         if (entryCode == null || entryCode.getExpireDateTime().isBefore(LocalDateTime.now())) {
-            return ResponseEntity.status(401).body("Неверный или просроченный код");
+            return false;
         }
 
         // Удаляем использованный код
         entryCodeRepository.delete(entryCode);
 
         // Возвращаем успешный ответ
-        return ResponseEntity.ok(new UserDTO(user));
+        return true;
     }
 }

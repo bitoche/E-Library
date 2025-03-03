@@ -47,7 +47,7 @@
         @JsonProperty(access = JsonProperty.Access.READ_WRITE)
         private Date birthDate;
 
-        @ManyToMany(fetch = FetchType.EAGER)
+        @ManyToMany(fetch = FetchType.LAZY)
         @JoinTable(name = "book_to_author",
                 joinColumns = {@JoinColumn(name = "book_author_id")},
                 inverseJoinColumns = {@JoinColumn(name = "book_id")})
@@ -109,5 +109,12 @@
 
         public void setBooks(Set<Book> books) {
             this.books = books;
+        }
+
+        public String getFullName() {
+            if (thirdName != null && !thirdName.isEmpty()){
+                return firstName+" "+thirdName+" "+secondName;
+            }
+            return firstName+" "+secondName;
         }
     }

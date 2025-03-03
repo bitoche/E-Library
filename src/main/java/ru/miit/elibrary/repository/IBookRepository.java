@@ -31,4 +31,11 @@ public interface IBookRepository extends JpaRepository<Book, Long> {
     @Transactional
     @Query(value = "DELETE FROM public.book WHERE identifier = :identifier", nativeQuery = true)
     void deleteByIdentifier(@Param("identifier") String identifier);
+
+    @Query("SELECT DISTINCT b FROM Book b " +
+            "LEFT JOIN FETCH b.authors " +
+            "LEFT JOIN FETCH b.publishingHouses " +
+            "LEFT JOIN FETCH b.genres " +
+            "LEFT JOIN FETCH b.language")
+    List<Book> findAllWithDetails();
 }

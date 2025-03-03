@@ -20,7 +20,7 @@ import java.sql.Date;
 @Controller
 @RestController
 @RequestMapping("/api/adm")
-@Tag(name = "Управление книгами, выдачей книг, заказами, и т.д.")
+@Tag(name = "Управление книгами, и т.п.")
 @CrossOrigin("http://localhost:3000/")
 public class AdminController {
     private final MainBookService mainBookService;

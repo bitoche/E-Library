@@ -10,8 +10,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.miit.elibrary.dtos.BookDTO;
+import ru.miit.elibrary.dtos.MinBookDTO;
 import ru.miit.elibrary.models.Book;
 import ru.miit.elibrary.models.BookAuthor;
+import ru.miit.elibrary.models.BookGenre;
+import ru.miit.elibrary.models.PublishingHouse;
 import ru.miit.elibrary.repository.IBookRepository;
 import ru.miit.elibrary.services.MainBookService;
 
@@ -19,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 @RestController
@@ -34,9 +38,8 @@ public class BookController {
         this.bookRepository = bookRepository;
         this.mainBookService = mainBookService;
     }
-    private ResponseEntity<?> bookRespToBookDTO(@org.jetbrains.annotations.NotNull
-                                                List<Book> books){
-        if (!books.isEmpty()){
+    private ResponseEntity<?> bookRespToBookDTO(List<Book> books){
+        if (books!=null && !books.isEmpty()){
             List<BookDTO> resp1 = new ArrayList<>();
             for (Book b : books){
                 resp1.add(new BookDTO(b));
@@ -44,6 +47,32 @@ public class BookController {
             return ResponseEntity.status(200).body(resp1);
         }
         return ResponseEntity.status(201).build();
+    }
+    private MinBookDTO convertToDTO(Book book) {
+        MinBookDTO dto = new MinBookDTO();
+        dto.setBookId(book.getBookId());
+        dto.setBookName(book.getBookName());
+        dto.setReleaseDate(book.getReleaseDate());
+        dto.setPagesNumber(book.getPagesNumber());
+        dto.setDescription(book.getDescription());
+        dto.setIdentifier(book.getIdentifier());
+
+        dto.setAuthorNames(book.getAuthors().stream()
+                .map(BookAuthor::getFullName)
+                .collect(Collectors.toSet()));
+
+        dto.setGenreNames(book.getGenres().stream()
+                .map(BookGenre::getGenreName)
+                .collect(Collectors.toSet()));
+
+        dto.setPublishingHouseNames(book.getPublishingHouses().stream()
+                .map(PublishingHouse::getPublishingHouseName)
+                .collect(Collectors.toSet()));
+
+        dto.setLanguageName(book.getLanguage().getLanguageName());
+        dto.setBookStatusName(book.getBookStatus().getStatusName());
+
+        return dto;
     }
 
     @GetMapping("/byName")
@@ -104,8 +133,11 @@ public class BookController {
     @Operation(summary = "Позволяет получить список книг из БД")
     @GetMapping("/getBooks")
     public ResponseEntity<?> getAllBooks(){
-        var resp = mainBookService.getAllBooks();
-        return bookRespToBookDTO(resp);
+        List<Book> books = mainBookService.getAllBooks();
+        List<MinBookDTO> bookDTOs = books.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(bookDTOs);
     }
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешное получен список книг"),

@@ -1,5 +1,6 @@
 package ru.miit.elibrary.models;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,6 +22,7 @@ public class Cabinet {
     private Integer cabinetNumber;
     @Column(name="shelves")
     @OneToMany
+    @Nullable
     private List<Bookshelf> shelves;
     @Column(name="cabinet_name")
     private String cabinetName;
