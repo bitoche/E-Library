@@ -9,9 +9,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
@@ -24,6 +29,7 @@ import ru.miit.elibrary.services.UserService;
 
 import java.security.Principal;
 import java.sql.Date;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,6 +42,8 @@ public class AuthController {
     private static final Logger logger = LoggerFactory.getLogger("Main");
 
     private final UserService userService;
+    //@Autowired
+    //private AuthenticationManager authenticationManager;
 
     private org.springframework.security.core.userdetails.UserDetails getUserDetails(){
         // Получаем объект аутентификации
@@ -152,7 +160,19 @@ public class AuthController {
     @Operation(summary = "Вход в аккаунт")
     @PostMapping("/loginProcessing")
     public ResponseEntity<?> login(@NotNull String email, @NotNull String password, @NotNull String entryCode){
-        return userService.loginWithOneTimeCode(email, password, entryCode);
+//        try {
+//            Authentication authentication = authenticationManager.authenticate(
+//                    new UsernamePasswordAuthenticationToken(email, password, Collections.emptyList())
+//            );
+//
+//            SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//            return ResponseEntity.ok().body("Login successful");
+//        } catch (AuthenticationException e) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed");
+//        }
+        var resp = userService.loginWithOneTimeCode(email, password, entryCode);
+        return resp ? ResponseEntity.ok().body("Все ок") : ResponseEntity.badRequest().body("Что-то неверное.");
     }
 
     @Operation(summary = "test me")
