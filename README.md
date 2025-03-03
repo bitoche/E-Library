@@ -11,6 +11,7 @@
    5. Имя бд
    6. Логин для почтового сервиса
    7. Токен для использования почтового сервиса
+   8. Уровни логирования
 4. Создать **локально** БД с помощью ddl-я (src/main/resources/scripts/create_all_tables.sql)
     - В DockerDesktop можно скачать Postgres, и задать параметры для сервера БД
 5. Запустить проект (в intellij idea с помощью запуска ELibraryApplication.java)
