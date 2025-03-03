@@ -1,36 +1,23 @@
 package ru.miit.elibrary.dtos;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import lombok.Data;
 import ru.miit.elibrary.models.UserRole;
-public class RoleDTO {
-    String roleName;
-    Integer roleOrdinal;
 
-    public RoleDTO(){};
+@Data
+public class RoleDTO {
+    private String roleName;
+    private Integer roleOrdinal;
+
+    public RoleDTO() {
+    }
+
     public RoleDTO(String roleName, Integer roleOrdinal) {
         this.roleName = roleName;
         this.roleOrdinal = roleOrdinal;
     }
-    public RoleDTO(UserRole role){
-        roleName = role.getRoleName();
-        roleOrdinal = role.getRoleId();
-    }
 
-    public String getRoleName() {
-        return roleName;
+    public RoleDTO(UserRole role) {
+        this.roleName = role.getRoleName();
+        this.roleOrdinal = role.getRoleId();
     }
-
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
-    }
-
-    public Integer getRoleOrdinal() {
-        return roleOrdinal;
-    }
-
-    public void setRoleOrdinal(Integer roleOrdinal) {
-        this.roleOrdinal = roleOrdinal;
-    }
-
 }

@@ -16,11 +16,9 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.cors.CorsConfiguration;
 import ru.miit.elibrary.services.AppUserDetailsService;
 
 import static org.springframework.security.config.Customizer.withDefaults;
-
 
 @Configuration
 @EnableWebSecurity
@@ -65,7 +63,7 @@ public class SecurityConfig {
         };
         final String[] NON_AUTHORIZED_ENDPOINTS = {
                 "/check-email",
-                "/login",
+                "/auth/login",
                 "/register",
                 "/confirm-account"
         };
@@ -75,17 +73,18 @@ public class SecurityConfig {
         };
         http
                 .httpBasic(withDefaults())
-                //.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
                                 .requestMatchers(RESOURCES_ENDPOINTS).permitAll()
                                 .requestMatchers(NON_AUTHORIZED_ENDPOINTS).permitAll()
                                 .requestMatchers(SWAGGER_ENDPOINTS).permitAll()
+
                                 .requestMatchers(temp_DEVELOPER_ENDPOINTS).hasAuthority("DEV")
                                 .requestMatchers(ADMIN_ENDPOINTS).hasAuthority("ADMIN")
                                 .requestMatchers(TEACHER_ENDPOINTS).hasAuthority("TEACHER")
-                                .anyRequest().permitAll() // permitAll если нужно чтобы любой мог любые другие запросы делать
+                                .requestMatchers("/auth/login", "/auth/logout").permitAll()
+                                .anyRequest().authenticated()
                 )
                 .formLogin(formLogin -> formLogin
                         .loginPage("/auth/login")
@@ -98,6 +97,8 @@ public class SecurityConfig {
                         logout.logoutUrl("/auth/logout")
                                 .logoutSuccessUrl("/")
                                 .invalidateHttpSession(true)
+                                .deleteCookies("JSESSIONID") // Удалить куки
+                                .permitAll()
                 )
                 .securityContext(
                         securityContext -> securityContext

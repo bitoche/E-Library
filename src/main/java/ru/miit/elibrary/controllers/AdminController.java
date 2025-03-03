@@ -79,8 +79,6 @@ public class AdminController {
     }
 
 
-
-
     //add
     @Operation(summary = "Добавить новую книгу в БД")
     @PostMapping(value = "/addBook", consumes = MediaType.APPLICATION_JSON_VALUE)

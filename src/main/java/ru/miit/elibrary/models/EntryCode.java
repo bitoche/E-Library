@@ -2,13 +2,21 @@ package ru.miit.elibrary.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import java.time.LocalDateTime;
 import java.util.concurrent.ThreadLocalRandom;
 
-
-
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
 @Entity
-@Table(name="entry_code",schema = "public")
+@Table(name = "entry_code", schema = "public")
 public class EntryCode {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,20 +27,15 @@ public class EntryCode {
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
     @Column(name="expire_dttm", nullable = false)
     private LocalDateTime expireDateTime;
-    public EntryCode(User user){
-        if (user == null) {
-            System.out.println("error(\"User is null when trying to create EntryCode\")");
-        }
+    public EntryCode(@NotNull User user){
         int sixDigitNumber = ThreadLocalRandom.current().nextInt(100000, 1000000);
         this.code = String.valueOf(sixDigitNumber);
         this.user = user;
-        this.expireDateTime = LocalDateTime.now().plusMinutes(20); // 20 минут в миллисекундах
-    }
-
-    public EntryCode() {
+        this.expireDateTime = LocalDateTime.now().plusMinutes(20);
     }
 
     public Long getCodeId() {

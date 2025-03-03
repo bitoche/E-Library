@@ -25,31 +25,6 @@ public class SuperAdminController {
         this.userService = userService;
     }
 
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Успешное обновление"),
-            @ApiResponse(responseCode = "400", description = "Не существует пользователя с таким Email"),
-            @ApiResponse(responseCode = "401", description = "Не существует роли с таким названием"),
-            @ApiResponse(responseCode = "444", description = "Пользователь не найден (UserService)")
-    })
-    @Operation(summary = "Добавить конкретному пользователю конкретную роль")
-    @PutMapping("/addRole")
-    public ResponseEntity<User> updateUser(@Parameter(description = "ID пользователя", required = true)
-                                           @RequestParam String email,
-                                           @Parameter(description = "ID роли для добавления", required = true)
-                                           @RequestParam String roleName){
-        var currUser = userService.getUserByUsername(email);
-        if (currUser==null){
-            return ResponseEntity.status(400).build();
-        }
-        var currRole = userService.getUserRoleByRole_name(roleName);
-        if (currRole==null){
-            return ResponseEntity.status(401).build();
-        }
-        currUser.addRole(currRole);
-        return userService.addRoleUpdate(currUser)
-                ? ResponseEntity.ok(currUser)
-                : ResponseEntity.status(444).build();
-    }
     @Operation(summary = "Изменить данные пользователя (пароль хешируется после выполнения)")
     @PutMapping("/changeUser")
     @ApiResponse(responseCode = "444", description = "Пользователь не найден (UserService)")
@@ -64,10 +39,24 @@ public class SuperAdminController {
     }
     @Operation(summary = "Добавляет новую роль пользователя")
     @PostMapping("/createUserRole")
-    public ResponseEntity<UserRole> createUserRole(@RequestBody UserRole userRole){
-        if (userService.saveUserRole(userRole) != null){
-            return ResponseEntity.ok(userRole);
+    public ResponseEntity<UserRole> createUserRole(@RequestParam String roleName){
+        var resp = userService.saveUserRole(roleName);
+        if (resp != null){
+            return ResponseEntity.ok(resp);
         }
         return ResponseEntity.badRequest().build();
+    }
+
+    @Operation(summary = "Удаляет пользователя по ID (без подтверждения) // perm: admin // now:all")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "404", description = "Пользователь не найден"),
+            @ApiResponse(responseCode = "200", description = "Пользователь удален"),
+    })
+    @DeleteMapping("/deleteUserById")
+    public ResponseEntity<?> deleteUserById(@RequestParam Long userId){
+        if (userService.getById(userId)!=null){
+            return ResponseEntity.ok().body(userService.deleteUserById(userId));
+        }
+        else return ResponseEntity.notFound().build();
     }
 }

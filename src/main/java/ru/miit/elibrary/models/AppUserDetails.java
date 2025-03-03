@@ -17,11 +17,9 @@ public class AppUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        if(!(user.getRoles() == null) && !user.getRoles().isEmpty()){
-            for (UserRole role:
-                    user.getRoles()) {
-                authorities.add(new SimpleGrantedAuthority(role.getRoleName()));
-            }
+        var role = user.getRole();
+        if(!(user.getRole() == null)){
+            authorities.add(new SimpleGrantedAuthority(role.getRoleName()));
         }
 
         return authorities;

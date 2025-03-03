@@ -50,24 +50,14 @@ public class User {
     @NotNull(message = "password must be specified")
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER,
-            cascade = CascadeType.ALL)
-    // fetch_type eager - жадная загрузка. сразу при запросе пользователя загружаются роли.
-    @JoinTable(name = "user_to_user_role",
-            joinColumns = {@JoinColumn(name = "user_id")},
-            inverseJoinColumns = {@JoinColumn(name = "user_role_id")})
-    @NotNull(message = "user must contains at least one role")
-    private Set<UserRole> roles = new HashSet<>();
-    //как будто бы роли не должны быть many to many
-    public Set<UserRole> getRoles(){
-        return this.roles;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", nullable = true)
+    private UserRole role;
+    public UserRole getRole() {
+        return role;
     }
-    public void addRole(UserRole userRole){
-        this.roles.add(userRole);
-    }
-    public void removeRoleIfExists(UserRole userRole){
-        this.roles.remove(userRole);
-        userRole.getUsers().remove(this); // удаляем связанные записи в role
+    public void setRole(UserRole role) {
+        this.role = role;
     }
     public String getPassword(){
         return this.password;
@@ -122,9 +112,5 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public void setRoles(Set<UserRole> roles) {
-        this.roles = roles;
     }
 }

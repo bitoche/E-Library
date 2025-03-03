@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import ru.miit.elibrary.dtos.CreateUserRequest;
 import ru.miit.elibrary.dtos.RoleDTO;
 import ru.miit.elibrary.dtos.UserDTO;
 import ru.miit.elibrary.models.User;
@@ -30,7 +31,7 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-    @Operation(summary = "Достает всех пользователей из бд")
+    @Operation(summary = "Достает всех пользователей из бд // perm: admin // now: all")
     @GetMapping("/getAllUsers")
     public ResponseEntity<List<UserDTO>> getAll(){
         //заменим полученных пользователей на userDTO, для того чтобы в роли не находились пользователи
@@ -41,7 +42,7 @@ public class UserController {
         }
         return ResponseEntity.ok(resp);
     }
-    @Operation(summary = "Достает все возможные роли пользователя")
+    @Operation(summary = "Достает все возможные роли пользователя // perm: admin // now: all")
     @GetMapping("/getAllUserRoles")
     public ResponseEntity<List<RoleDTO>> getAllRoles(){
         var allRoles = userService.getAllUserRoles();
@@ -51,14 +52,14 @@ public class UserController {
         }
         return ResponseEntity.ok(resp);
     }
-    @Operation(summary = "Добавляет нового пользователя")
+    @Operation(summary = "Добавляет нового пользователя // perm: admin // now: all")
     @PostMapping("/createUser")
-    public ResponseEntity<User> createUser(@RequestBody User user){
+    public ResponseEntity<?> createUser(@RequestBody CreateUserRequest user){
         return userService.save(user, SAVETYPE.WITH_ROLE_INCLUDED)
-                ? ResponseEntity.ok(user)
+                ? ResponseEntity.ok().body("Успешно создан пользователь с email = "+ user.getEmail())
                 : ResponseEntity.badRequest().build();
     }
-    @Operation(summary = "Достает пользователя по его ID")
+    @Operation(summary = "Достает пользователя по его ID // perm: all")
     @GetMapping("/getUser/{userId}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable Long userId){
         var resp = userService.getById(userId);

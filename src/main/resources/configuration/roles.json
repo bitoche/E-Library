@@ -1,0 +1,30 @@
+{
+  "role_names": [
+    "STUDENT",
+    "ADMIN",
+    "TEACHER"
+  ],
+  "roles": {
+    "STUDENT": {
+      "allowed_links": [
+        "/s/**"
+      ],
+      "display_name": "Студент",
+      "en_display_name": "Student"
+    },
+    "ADMIN": {
+      "allowed_links": [
+        "all"
+      ],
+      "display_name": "Администратор",
+      "en_display_name": "Administrator"
+    },
+    "TEACHER": {
+      "allowed_links": [
+        "/s/**",
+        "/t/**"
+      ]
+    }
+
+  }
+}

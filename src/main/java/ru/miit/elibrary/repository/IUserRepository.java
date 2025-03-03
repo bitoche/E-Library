@@ -14,4 +14,6 @@ public interface IUserRepository extends JpaRepository<User, Long> {
     //для регистрации и подтверждения входа по имейл
     User findByEmailIgnoreCase(String emailId);
     Boolean existsByEmail(String email);
+
+    User getUserByUserId(Long userId);
 }

@@ -1,5 +1,6 @@
 package ru.miit.elibrary.repository;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,4 +15,8 @@ public interface IEntryCodeRepository extends JpaRepository<EntryCode, Long> {
             "WHERE u.userId = :userId")
     EntryCode getEntryCodeByUserId(@Param("userId") Long userId);
     boolean existsByUser(User user);
+
+    EntryCode findByUserAndCode(User user, String code);
+
+    void deleteByUser(User user);
 }
